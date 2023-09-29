@@ -110,3 +110,70 @@ exports.resetPassword = BigPromise(async (req, res, next) => {
     //send a json response or send token
     cookieToken(user, res);
 })
+
+exports.changePassword = BigPromise(async (req, res, next) => {
+    const userId = req.user.id;
+    const user = await User.findById(userId).select("+password");
+    if (!user) {
+        return next(new Error("User does not exists"));
+    }
+    const { oldPassword, newPassword, confirmNewPassword } = req.body;
+    const isOldPasswordCorrect = await user.isValidatedPassword(oldPassword);
+    if (!isOldPasswordCorrect) {
+        return next(new Error("Your old password is incorrect"));
+    }
+    if (newPassword !== confirmNewPassword) {
+        return next(new Error("Confirm your password correctly"));
+    }
+    user.password = newPassword;
+    await user.save();
+    cookieToken(user, res);
+})
+
+exports.getLoggedInUserDetails = BigPromise(async (req, res, next) => {
+    const user = await User.findById(req.user.id);
+    res.status(200).json({
+        success: true,
+        user
+    })
+})
+
+exports.updateLoggedInUserDetails = BigPromise(async (req, res, next) => {
+    const userId = req.user.id;
+    const { name, email } = req.body;
+    if (name === "" || email === "") {
+        return next(new Error("Please provide a name and email"));
+    }
+    const newData = {
+        name: name,
+        email: email
+    };
+    //if user changes the photo
+    if (req.files) {
+        const user = await User.findById(userId);
+        const imageId = user.photo.id;
+        //deleting the image in cloudinary by using the imageId
+        const resp = await cloudinary.uploader.destroy(imageId);
+        //uploading the new photo
+        let file = req.files.photo;
+        const result = await cloudinary.uploader.upload(file.tempFilePath, {
+            folder: "ecommerceapp",
+            width: 150,
+            crop: "scale"
+        })
+        newData.photo = {
+            id: result.public_id,
+            secure_url: result.secure_url
+        }
+    }
+    const user = await User.findByIdAndUpdate(userId, newData, {
+        new: true,
+        runValidators: true,
+        useFindAndModify: false
+    })
+    res.status(200).json({
+        success: true,
+        user,
+        message: "User updated successfully"
+    })
+})
