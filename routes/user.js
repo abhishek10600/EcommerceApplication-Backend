@@ -33,6 +33,7 @@ router.route("/admin/users").get(isLoggedIn, customRole("admin"), adminGetAllUse
 router.route("/admin/users/:id").get(isLoggedIn, customRole("admin"), adminGetOneUser);
 router.route("/admin/users/:id").put(isLoggedIn, customRole("admin"), adminUpdateOneUserDetails);
 router.route("/admin/users/:id").delete(isLoggedIn, customRole("admin"), adminDeleteOneUser);
+
 //manager only route
 router.route("/manager/users").get(isLoggedIn, customRole("manager"), managerGetAllUsers);
 
