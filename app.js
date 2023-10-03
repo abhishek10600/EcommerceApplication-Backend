@@ -7,7 +7,6 @@ const fileUpload = require("express-fileupload");
 const app = express();
 
 //importing all the router
-const home = require("./routes/home.js");
 const user = require("./routes/user.js");
 const product = require("./routes/product.js");
 
@@ -39,7 +38,6 @@ app.get("/signuptest", (req, res) => {
 app.use(morgan("tiny"));
 
 //router middleware
-app.use("/api/v1", home);
 app.use("/api/v1", user);
 app.use("/api/v1", product);
 
