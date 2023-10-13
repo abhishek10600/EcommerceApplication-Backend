@@ -9,6 +9,7 @@ const app = express();
 //importing all the router
 const user = require("./routes/user.js");
 const product = require("./routes/product.js");
+const payment = require("./routes/payment.js");
 
 //for swagger documentation
 const swaggerUi = require("swagger-ui-express");
@@ -40,5 +41,6 @@ app.use(morgan("tiny"));
 //router middleware
 app.use("/api/v1", user);
 app.use("/api/v1", product);
+app.use("/api/v1", payment);
 
 module.exports = app;
