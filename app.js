@@ -10,6 +10,7 @@ const app = express();
 const user = require("./routes/user.js");
 const product = require("./routes/product.js");
 const payment = require("./routes/payment.js");
+const order = require("./routes/order.js");
 
 //for swagger documentation
 const swaggerUi = require("swagger-ui-express");
@@ -42,5 +43,6 @@ app.use(morgan("tiny"));
 app.use("/api/v1", user);
 app.use("/api/v1", product);
 app.use("/api/v1", payment);
+app.use("/api/v1", order);
 
 module.exports = app;
